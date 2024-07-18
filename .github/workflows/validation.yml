@@ -1,0 +1,194 @@
+# 有个小缺陷需要解决，fokr端（下游）创建分支时必须同名，否则只有创建时是复制的制定分支，后续目标会被强制改为上游默认分支
+# 按照规范，发布分支应当仅限单向推送
+name: Validation
+
+# 这里通过主分支的 push 和手动触发器触发，也可以自定义其他触发方式
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+# ref https://docs.github.com/zh/actions/learn-github-actions/variables
+env:
+  cd_path: "test/ci" # (Github）持续交付路径, 不能以 / 结尾
+  cd_branch: "main_-_cd_-_test" # 不能包含 / 等字符
+  dist_path: "test/src" # 分发路径, 不能以 / 结尾
+  dist_branch: "main_-_dist_-_test" # 不能包含 / 等字符
+  main_branch: "main" # 当前仓库（上游）主分支
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 确保可以获取所有历史记录，以便合并
+          token: ${{ secrets.TOEKN_FOREVER_FULL_WRITE }} # 使用具有完全写入权限的 TOKEN（必须包含 workflows ）
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+
+      - name: Check if dist_branch exists in the remote
+        id: dist_branch-exists
+        run: |
+          # grep -qE 使用了 -E 参数来启用扩展的正则表达式, 并且使用了 $ 符号来确保匹配的字符串以 main 结尾, 达到精准匹配的目的
+          if git ls-remote --heads origin | grep -qE 'refs/heads/${{ env.dist_branch }}$'; then
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+            echo "Remote branch ${{ env.dist_branch }} exists."
+          else
+            echo "branch_exists=false" >> $GITHUB_OUTPUT
+            echo "Remote branch ${{ env.dist_branch }} does not exist."
+          fi
+      - name: Check if cd_branch exists in the remote
+        id: cd_branch-exists
+        run: |
+          # grep -qE 使用了 -E 参数来启用扩展的正则表达式, 并且使用了 $ 符号来确保匹配的字符串以 main 结尾, 达到精准匹配的目的
+          if git ls-remote --heads origin | grep -qE 'refs/heads/${{ env.cd_branch }}$'; then
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+            echo "Remote branch ${{ env.cd_branch }} exists."
+          else
+            echo "branch_exists=false" >> $GITHUB_OUTPUT
+            echo "Remote branch ${{ env.cd_branch }} does not exist."
+          fi
+      - name: Sync dist_path from main_branch to exists dist_branch
+        if: steps.dist_branch-exists.outputs.branch_exists == 'true'
+        run: |
+          # 主分支需要重复使用, 因此基于临时分支操作
+          git checkout -b temp_${{ env.main_branch }} ${{ env.main_branch }}
+          # 创建临时文件夹，如果它不存在的话
+          mkdir -p $HOME/tmp
+          # 清空临时文件夹的内容
+          find $HOME/tmp/ -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          ls -A $HOME/tmp/
+          rsync -a --exclude '.git' ${{ env.dist_path }}/ $HOME/tmp/
+          ls -A $HOME/tmp/
+          git checkout ${{ env.dist_branch }}
+          # 清空所有文件，除了.git目录
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          rsync -a --exclude '.git' $HOME/tmp/ ./
+          find . -path './.git' -prune -o -exec ls -lR {} +
+          git add .
+          git commit -m "🪂 Sync ${{ env.dist_path }} from ${{ env.main_branch }} to ${{ env.dist_branch }}" || echo "No changes to commit"
+          # 删除临时分支
+          git branch -D temp_${{ env.main_branch }}
+      - name: Sync cd_path from main_branch to exists cd_branch
+        if: steps.cd_branch-exists.outputs.branch_exists == 'true'
+        run: |
+          # 主分支需要重复使用, 因此基于临时分支操作
+          git checkout -b temp_${{ env.main_branch }} ${{ env.main_branch }}
+          # 创建临时文件夹，如果它不存在的话
+          mkdir -p $HOME/tmp
+          # 清空临时文件夹的内容
+          find $HOME/tmp/ -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          ls -A $HOME/tmp/
+          rsync -a --exclude '.git' ${{ env.cd_path }}/ $HOME/tmp/
+          ls -A $HOME/tmp/
+          git checkout ${{ env.cd_branch }}
+          # 清空所有文件，除了.git目录
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          rsync -a --exclude '.git' $HOME/tmp/ ./
+          find . -path './.git' -prune -o -exec ls -lR {} +
+          git add .
+          git commit -m "🪂 Sync ${{ env.cd_path }} from ${{ env.main_branch }} to ${{ env.cd_branch }}" || echo "No changes to commit"
+          # 删除临时分支
+          git branch -D temp_${{ env.main_branch }}
+      - name: Copy dist_path from main_branch to not exist dist_branch
+        if: steps.dist_branch-exists.outputs.branch_exists == 'false'
+        run: |
+          # 主分支需要重复使用, 因此基于临时分支操作
+          git checkout -b temp_${{ env.main_branch }} ${{ env.main_branch }}
+          # 创建临时文件夹，如果它不存在的话
+          find $HOME/tmp/ -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          # 清空临时文件夹的内容
+          rm -rf $HOME/tmp/*
+          cp -r ${{ env.dist_path }} $HOME/tmp/
+          # 清空所有文件，除了.git目录
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          # 创建一个全新的分支, 不基于任何现有的提交
+          git checkout --orphan ${{ env.dist_branch }}
+          shopt -s dotglob nullglob
+          # 移动所有非隐藏文件和目录
+          files=($HOME/tmp/${{ env.dist_path }}/*)
+          if [ ${#files[@]} -gt 0 ]; then
+            mv $HOME/tmp/${{ env.dist_path }}/* .
+          else
+            echo "No non-hidden files or directories to move."
+          fi
+          # 移动所有隐藏文件和目录，但排除 . 和 ..
+          hidden_files=($HOME/tmp/${{ env.dist_path }}/.[!.]*)
+          if [ ${#hidden_files[@]} -gt 0 ]; then
+            mv $HOME/tmp/${{ env.dist_path }}/.[!.]* .
+          else
+            echo "No hidden files or directories to move."
+          fi
+          shopt -u dotglob nullglob
+          # shopt -s dotglob 命令将开启shell选项, 使得通配符 * 包含以点开头的文件和目录。
+          # nullglob 选项确保当没有匹配的文件时, 通配符不展开为自身。
+          # 之后，我们通过 shopt -u dotglob nullglob 命令关闭这些选项, 以恢复默认行为。
+          git add .
+          git commit -m "🪂 Initial ${{ env.dist_path }} from ${{ env.main_branch }} to ${{ env.dist_branch }}"
+          # 删除临时分支
+          git branch -D temp_${{ env.main_branch }}
+      - name: Copy cd_path from main_branch to not exist cd_branch
+        if: steps.cd_branch-exists.outputs.branch_exists == 'false'
+        run: |
+          # 主分支需要重复使用, 因此基于临时分支操作
+          git checkout -b temp_${{ env.main_branch }} ${{ env.main_branch }}
+          # 创建临时文件夹，如果它不存在的话
+          mkdir -p $HOME/tmp
+          # 清空临时文件夹的内容
+          find $HOME/tmp/ -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          cp -r ${{ env.cd_path }} $HOME/tmp/
+          # 清空所有文件，除了.git目录
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          # 创建一个全新的分支, 不基于任何现有的提交
+          git checkout --orphan ${{ env.cd_branch }}
+          shopt -s dotglob nullglob
+          # 移动所有非隐藏文件和目录
+          files=($HOME/tmp/${{ env.cd_path }}/*)
+          if [ ${#files[@]} -gt 0 ]; then
+            mv $HOME/tmp/${{ env.cd_path }}/* .
+          else
+            echo "No non-hidden files or directories to move."
+          fi
+          # 移动所有隐藏文件和目录，但排除 . 和 ..
+          hidden_files=($HOME/tmp/${{ env.cd_path }}/.[!.]*)
+          if [ ${#hidden_files[@]} -gt 0 ]; then
+            mv $HOME/tmp/${{ env.cd_path }}/.[!.]* .
+          else
+            echo "No hidden files or directories to move."
+          fi
+          shopt -u dotglob nullglob
+          # shopt -s dotglob 命令将开启shell选项, 使得通配符 * 包含以点开头的文件和目录。
+          # nullglob 选项确保当没有匹配的文件时, 通配符不展开为自身。
+          # 之后，我们通过 shopt -u dotglob nullglob 命令关闭这些选项, 以恢复默认行为。
+          git add .
+          git commit -m "🪂 Initial ${{ env.cd_path }} from ${{ env.main_branch }} to ${{ env.cd_branch }}"
+          # 删除临时分支
+          git branch -D temp_${{ env.main_branch }}
+      - run: |
+          git checkout ${{ env.dist_branch }}
+      - name: Push dist_branch
+        id: push_dist_branch
+        uses: ad-m/github-push-action@master
+        with:
+          branch: ${{ env.dist_branch }}
+          force: true
+          # force_with_lease: true # 仅在远程分支自上次检出以来没有其他提交的情况下成功
+        env:
+          github_token: ${{ secrets.TOEKN_FOREVER_FULL_WRITE }} # 使用具有完全写入权限的 TOKEN（必须包含 workflows ）
+      - run: |
+          git checkout ${{ env.cd_branch }}
+      - name: Push cd_branch
+        id: push_cd_branch
+        uses: ad-m/github-push-action@master
+        with:
+          branch: ${{ env.cd_branch }}
+          force: true
+          # force_with_lease: true # 仅在远程分支自上次检出以来没有其他提交的情况下成功
+        env:
+          github_token: ${{ secrets.TOEKN_FOREVER_FULL_WRITE }} # 使用具有完全写入权限的 TOKEN（必须包含 workflows ）
