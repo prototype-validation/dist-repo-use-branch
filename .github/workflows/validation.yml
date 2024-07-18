@@ -110,25 +110,7 @@ jobs:
           find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
           # 创建一个全新的分支, 不基于任何现有的提交
           git checkout --orphan ${{ env.dist_branch }}
-          shopt -s dotglob nullglob
-          # 移动所有非隐藏文件和目录
-          files=($HOME/tmp/${{ env.dist_path }}/*)
-          if [ ${#files[@]} -gt 0 ]; then
-            mv $HOME/tmp/${{ env.dist_path }}/* .
-          else
-            echo "No non-hidden files or directories to move."
-          fi
-          # 移动所有隐藏文件和目录，但排除 . 和 ..
-          hidden_files=($HOME/tmp/${{ env.dist_path }}/.[!.]*)
-          if [ ${#hidden_files[@]} -gt 0 ]; then
-            mv $HOME/tmp/${{ env.dist_path }}/.[!.]* .
-          else
-            echo "No hidden files or directories to move."
-          fi
-          shopt -u dotglob nullglob
-          # shopt -s dotglob 命令将开启shell选项, 使得通配符 * 包含以点开头的文件和目录。
-          # nullglob 选项确保当没有匹配的文件时, 通配符不展开为自身。
-          # 之后，我们通过 shopt -u dotglob nullglob 命令关闭这些选项, 以恢复默认行为。
+          rsync -a --exclude '.git' $HOME/tmp/ ./
           git add .
           git commit -m "🪂 Initial ${{ env.dist_path }} from ${{ env.main_branch }} to ${{ env.dist_branch }}"
           # 删除临时分支
@@ -147,25 +129,7 @@ jobs:
           find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
           # 创建一个全新的分支, 不基于任何现有的提交
           git checkout --orphan ${{ env.cd_branch }}
-          shopt -s dotglob nullglob
-          # 移动所有非隐藏文件和目录
-          files=($HOME/tmp/${{ env.cd_path }}/*)
-          if [ ${#files[@]} -gt 0 ]; then
-            mv $HOME/tmp/${{ env.cd_path }}/* .
-          else
-            echo "No non-hidden files or directories to move."
-          fi
-          # 移动所有隐藏文件和目录，但排除 . 和 ..
-          hidden_files=($HOME/tmp/${{ env.cd_path }}/.[!.]*)
-          if [ ${#hidden_files[@]} -gt 0 ]; then
-            mv $HOME/tmp/${{ env.cd_path }}/.[!.]* .
-          else
-            echo "No hidden files or directories to move."
-          fi
-          shopt -u dotglob nullglob
-          # shopt -s dotglob 命令将开启shell选项, 使得通配符 * 包含以点开头的文件和目录。
-          # nullglob 选项确保当没有匹配的文件时, 通配符不展开为自身。
-          # 之后，我们通过 shopt -u dotglob nullglob 命令关闭这些选项, 以恢复默认行为。
+          rsync -a --exclude '.git' $HOME/tmp/ ./
           git add .
           git commit -m "🪂 Initial ${{ env.cd_path }} from ${{ env.main_branch }} to ${{ env.cd_branch }}"
           # 删除临时分支
