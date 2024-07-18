@@ -96,16 +96,16 @@ jobs:
           git commit -m "🪂 Sync ${{ env.cd_path }} from ${{ env.main_branch }} to ${{ env.cd_branch }}" || echo "No changes to commit"
           # 删除临时分支
           git branch -D temp_${{ env.main_branch }}
-      - name: Copy dist_path from main_branch to not exist dist_branch
+      - name: Init dist_branch from dist_path at main_branch
         if: steps.dist_branch-exists.outputs.branch_exists == 'false'
         run: |
           # 主分支需要重复使用, 因此基于临时分支操作
           git checkout -b temp_${{ env.main_branch }} ${{ env.main_branch }}
           # 创建临时文件夹，如果它不存在的话
-          find $HOME/tmp/ -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          mkdir -p $HOME/tmp
           # 清空临时文件夹的内容
-          rm -rf $HOME/tmp/*
-          cp -r ${{ env.dist_path }} $HOME/tmp/
+          find $HOME/tmp/ -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          rsync -a --exclude '.git' ${{ env.dist_path }}/ $HOME/tmp/
           # 清空所有文件，除了.git目录
           find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
           # 创建一个全新的分支, 不基于任何现有的提交
@@ -133,7 +133,7 @@ jobs:
           git commit -m "🪂 Initial ${{ env.dist_path }} from ${{ env.main_branch }} to ${{ env.dist_branch }}"
           # 删除临时分支
           git branch -D temp_${{ env.main_branch }}
-      - name: Copy cd_path from main_branch to not exist cd_branch
+      - name: Init cd_branch from cd_path at main_branch
         if: steps.cd_branch-exists.outputs.branch_exists == 'false'
         run: |
           # 主分支需要重复使用, 因此基于临时分支操作
@@ -142,7 +142,7 @@ jobs:
           mkdir -p $HOME/tmp
           # 清空临时文件夹的内容
           find $HOME/tmp/ -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-          cp -r ${{ env.cd_path }} $HOME/tmp/
+          rsync -a --exclude '.git' ${{ env.cd_path }}/ $HOME/tmp/
           # 清空所有文件，除了.git目录
           find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
           # 创建一个全新的分支, 不基于任何现有的提交
