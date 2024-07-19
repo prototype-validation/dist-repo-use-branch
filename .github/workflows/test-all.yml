@@ -15,33 +15,39 @@ jobs:
     secrets: inherit
     with:
       name: "test"
+      repo_name: "prototype-test/dist-repo-use-branch_test"
   test2:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
     secrets: inherit
     with:
       name: "test2"
+      repo_name: "prototype-test/dist-repo-use-branch_test2"
   test3:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
     secrets: inherit
     with:
       name: "test3"
+      repo_name: "prototype-test/dist-repo-use-branch_test3"
   test4:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
     secrets: inherit
     with:
       name: "test4"
+      repo_name: "prototype-test/dist-repo-use-branch_test4"
   test5:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
     secrets: inherit
     with:
       name: "test5"
+      repo_name: "prototype-test/dist-repo-use-branch_test5"
   test6:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
     secrets: inherit
     with:
       name: "test6"
+      repo_name: "prototype-test/dist-repo-use-branch_test6"
