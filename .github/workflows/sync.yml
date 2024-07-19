@@ -77,7 +77,7 @@ jobs:
             echo "Remote branch ${{ inputs.target_sync_branch }} exists."
             # 创建一个临时分支来fetch远程分支的内容
             git fetch upstream ${{ inputs.upstream_sync_branch }}:temp_${{ inputs.upstream_sync_branch }}
-            ggit checkout ${{ inputs.target_sync_branch }}
+            git checkout ${{ inputs.target_sync_branch }}
             # 合并，使用传入解决合并冲突
             git merge --strategy-option theirs temp_${{ inputs.upstream_sync_branch }}
             # 强制删除临时分支，没必要
