@@ -2,30 +2,14 @@ name: test2
 
 # 这里通过主分支的 push 和手动触发器触发，也可以自定义其他触发方式
 on:
+  workflow_call:
   workflow_dispatch:
   push:
     branches:
       - main
-env:
-  cd_branch_prefix: ${{ github.ref }}_-_cd_-_
-  dist_branch_prefix: ${{ github.ref }}_-_dist_-_
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      # ::set-output 命令将被弃用，而 env 又不能直接在下面非 steps 中使用，而 steps 又不支持 uses 使用 action yml 文件……因此这里转发使用 env
-      cd_branch_prefix: ${{ env.cd_branch_prefix }}
-      dist_branch_prefix: ${{ env.dist_branch_prefix }}
-    steps:
-      - id: nothing-step
-        run: |
-          echo "这一步是必要的，去掉会报错"
   build:
-    needs: setup
-    uses: ./.github/workflows/validation.yml
+    uses: ./.github/workflows/validation-proxy.yml
     secrets: inherit
     with:
-      cd_path: "test2/ci"
-      cd_branch: "${{ needs.setup.outputs.cd_branch_prefix }}test2"
-      dist_path: "test2/src"
-      dist_branch: "${{ needs.setup.outputs.dist_branch_prefix }}test2"
+      name: "test2"

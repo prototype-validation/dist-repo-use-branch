@@ -2,6 +2,7 @@ name: test
 
 # 这里通过主分支的 push 和手动触发器触发，也可以自定义其他触发方式
 on:
+  workflow_call:
   workflow_dispatch:
   push:
     branches:

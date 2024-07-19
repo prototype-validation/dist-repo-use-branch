@@ -6,18 +6,8 @@ on:
 
 jobs:
   test:
-    uses: ./.github/workflows/validation.yml
+    uses: ./.github/workflows/test.yml
     secrets: inherit
-    with:
-      cd_path: "test/ci"
-      cd_branch: "main_-_cd_-_test"
-      dist_path: "test/src"
-      dist_branch: "main_-_dist_-_test"
   test2:
-    uses: ./.github/workflows/validation.yml
+    uses: ./.github/workflows/test2.yml
     secrets: inherit
-    with:
-      cd_path: "test2/ci"
-      cd_branch: "main_-_cd_-_test2"
-      dist_path: "test2/src"
-      dist_branch: "main_-_dist_-_test2"
