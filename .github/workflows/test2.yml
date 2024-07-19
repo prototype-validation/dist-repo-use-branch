@@ -1,0 +1,18 @@
+name: test2
+
+# 这里通过主分支的 push 和手动触发器触发，也可以自定义其他触发方式
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    uses: ./.github/workflows/validation.yml
+    secrets: inherit
+    with:
+      cd_path: "test2/ci" # (Github）持续交付路径, 不能以 / 结尾
+      cd_branch: "main_-_cd_-_test2" # 不能包含 / 等字符
+      dist_path: "test2/src" # 分发路径, 不能以 / 结尾
+      dist_branch: "main_-_dist_-_test2" # 不能包含 / 等字符
