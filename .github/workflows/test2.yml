@@ -13,8 +13,16 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
+      # ::set-output 命令将被弃用，而 env 又不能直接在下面非 steps 中使用，而 steps 又不支持 uses 使用 action yml 文件……
       cd_branch_prefix: ${{ env.cd_branch_prefix }}
       dist_branch_prefix: ${{ env.dist_branch_prefix }}
+      _cd_branch_prefix: ${{ steps.set-prefix.outputs.cd_branch_prefix }}
+      _dist_branch_prefix: ${{ steps.set-prefix.outputs.dist_branch_prefix }}
+    steps:
+      - id: set-prefix
+        run: |
+          echo "::set-output name=cd_branch_prefix::${{ github.ref }}_-_cd_-_"
+          echo "::set-output name=dist_branch_prefix::${{ github.ref }}_-_dist_-_"
   build:
     needs: setup
     uses: ./.github/workflows/validation.yml
