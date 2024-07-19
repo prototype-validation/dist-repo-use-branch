@@ -1,15 +1,12 @@
 name: test all
 
-# 这里通过主分支的 push 和手动触发器触发，也可以自定义其他触发方式
+# 这里通过手动触发器触发，也可以自定义其他触发方式
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   build:
-    runs-on: ${{ matrix.config.repo }}
+    runs-on: ubuntu-latest
     name: ${{ matrix.config.repo_name }}
     strategy:
       matrix:
