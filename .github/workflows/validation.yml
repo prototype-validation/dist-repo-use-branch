@@ -6,6 +6,9 @@ name: Validation
 on:
   workflow_call:
     inputs:
+      main_branch:  # 上游主分支
+        required: true
+        type: string
       cd_path:  # (Github）持续交付路径, 不能以 / 结尾
         required: true
         type: string
@@ -18,10 +21,6 @@ on:
       dist_branch:  # 不能包含 / 等字符
         required: true
         type: string
-
-# ref https://docs.github.com/zh/actions/learn-github-actions/variables
-env:
-  main_branch: "main" # 当前仓库（上游）主分支
 
 jobs:
   build:
@@ -64,7 +63,7 @@ jobs:
         if: steps.dist_branch-exists.outputs.branch_exists == 'true'
         run: |
           # 主分支需要重复使用, 因此基于临时分支操作
-          git checkout -b temp_${{ env.main_branch }} ${{ env.main_branch }}
+          git checkout -b temp_${{ inputs.main_branch }} ${{ inputs.main_branch }}
           # 创建临时文件夹，如果它不存在的话
           mkdir -p $HOME/tmp
           # 清空临时文件夹的内容
@@ -78,14 +77,14 @@ jobs:
           rsync -a --exclude '.git' $HOME/tmp/ ./
           find . -path './.git' -prune -o -exec ls -lR {} +
           git add .
-          git commit -m "🪂 Sync ${{ inputs.dist_path }} from ${{ env.main_branch }} to ${{ inputs.dist_branch }}" || echo "No changes to commit"
+          git commit -m "🪂 Sync ${{ inputs.dist_path }} from ${{ inputs.main_branch }} to ${{ inputs.dist_branch }}" || echo "No changes to commit"
           # 删除临时分支
-          git branch -D temp_${{ env.main_branch }}
+          git branch -D temp_${{ inputs.main_branch }}
       - name: Sync cd_path from main_branch to exists cd_branch
         if: steps.cd_branch-exists.outputs.branch_exists == 'true'
         run: |
           # 主分支需要重复使用, 因此基于临时分支操作
-          git checkout -b temp_${{ env.main_branch }} ${{ env.main_branch }}
+          git checkout -b temp_${{ inputs.main_branch }} ${{ inputs.main_branch }}
           # 创建临时文件夹，如果它不存在的话
           mkdir -p $HOME/tmp
           # 清空临时文件夹的内容
@@ -99,14 +98,14 @@ jobs:
           rsync -a --exclude '.git' $HOME/tmp/ ./
           find . -path './.git' -prune -o -exec ls -lR {} +
           git add .
-          git commit -m "🪂 Sync ${{ inputs.cd_path }} from ${{ env.main_branch }} to ${{ inputs.cd_branch }}" || echo "No changes to commit"
+          git commit -m "🪂 Sync ${{ inputs.cd_path }} from ${{ inputs.main_branch }} to ${{ inputs.cd_branch }}" || echo "No changes to commit"
           # 删除临时分支
-          git branch -D temp_${{ env.main_branch }}
+          git branch -D temp_${{ inputs.main_branch }}
       - name: Init dist_branch from dist_path at main_branch
         if: steps.dist_branch-exists.outputs.branch_exists == 'false'
         run: |
           # 主分支需要重复使用, 因此基于临时分支操作
-          git checkout -b temp_${{ env.main_branch }} ${{ env.main_branch }}
+          git checkout -b temp_${{ inputs.main_branch }} ${{ inputs.main_branch }}
           # 创建临时文件夹，如果它不存在的话
           mkdir -p $HOME/tmp
           # 清空临时文件夹的内容
@@ -118,14 +117,14 @@ jobs:
           git checkout --orphan ${{ inputs.dist_branch }}
           rsync -a --exclude '.git' $HOME/tmp/ ./
           git add .
-          git commit -m "🪂 Initial ${{ inputs.dist_path }} from ${{ env.main_branch }} to ${{ inputs.dist_branch }}"
+          git commit -m "🪂 Initial ${{ inputs.dist_path }} from ${{ inputs.main_branch }} to ${{ inputs.dist_branch }}"
           # 删除临时分支
-          git branch -D temp_${{ env.main_branch }}
+          git branch -D temp_${{ inputs.main_branch }}
       - name: Init cd_branch from cd_path at main_branch
         if: steps.cd_branch-exists.outputs.branch_exists == 'false'
         run: |
           # 主分支需要重复使用, 因此基于临时分支操作
-          git checkout -b temp_${{ env.main_branch }} ${{ env.main_branch }}
+          git checkout -b temp_${{ inputs.main_branch }} ${{ inputs.main_branch }}
           # 创建临时文件夹，如果它不存在的话
           mkdir -p $HOME/tmp
           # 清空临时文件夹的内容
@@ -137,9 +136,9 @@ jobs:
           git checkout --orphan ${{ inputs.cd_branch }}
           rsync -a --exclude '.git' $HOME/tmp/ ./
           git add .
-          git commit -m "🪂 Initial ${{ inputs.cd_path }} from ${{ env.main_branch }} to ${{ inputs.cd_branch }}"
+          git commit -m "🪂 Initial ${{ inputs.cd_path }} from ${{ inputs.main_branch }} to ${{ inputs.cd_branch }}"
           # 删除临时分支
-          git branch -D temp_${{ env.main_branch }}
+          git branch -D temp_${{ inputs.main_branch }}
       - run: |
           git checkout ${{ inputs.dist_branch }}
       - name: Push dist_branch
