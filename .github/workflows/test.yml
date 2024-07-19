@@ -12,7 +12,7 @@ jobs:
     uses: ./.github/workflows/validation.yml
     secrets: inherit
     with:
-      cd_path: "test/ci" # (Github）持续交付路径, 不能以 / 结尾
-      cd_branch: "main_-_cd_-_test" # 不能包含 / 等字符
-      dist_path: "test/src" # 分发路径, 不能以 / 结尾
-      dist_branch: "main_-_dist_-_test" # 不能包含 / 等字符
+      cd_path: "test/ci"
+      cd_branch: "main_-_cd_-_test"
+      dist_path: "test/src"
+      dist_branch: "main_-_dist_-_test"

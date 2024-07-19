@@ -8,11 +8,22 @@ on:
       - main
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      cd_branch_prefix: ${{ steps.set-prefix.outputs.cd_branch_prefix }}
+      dist_branch_prefix: ${{ steps.set-prefix.outputs.dist_branch_prefix }}
+    steps:
+      - id: set-prefix
+        run: |
+          echo "::set-output name=cd_branch_prefix::${{ github.ref }}_-_cd_-_"
+          echo "::set-output name=dist_branch_prefix::${{ github.ref }}_-_dist_-_"
   build:
+    needs: setup
     uses: ./.github/workflows/validation.yml
     secrets: inherit
     with:
-      cd_path: "test2/ci" # (Github）持续交付路径, 不能以 / 结尾
-      cd_branch: "main_-_cd_-_test2" # 不能包含 / 等字符
-      dist_path: "test2/src" # 分发路径, 不能以 / 结尾
-      dist_branch: "main_-_dist_-_test2" # 不能包含 / 等字符
+      cd_path: "test2/ci"
+      cd_branch: "${{ needs.setup.outputs.cd_branch_prefix }}test2"
+      dist_path: "test2/src"
+      dist_branch: "${{ needs.setup.outputs.dist_branch_prefix }}test2"

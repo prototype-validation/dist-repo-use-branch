@@ -5,23 +5,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    name: ${{ matrix.config.repo_name }}
-    strategy:
-      matrix:
-        config:
-          - repo: test
-            repo_name: test
-          - repo: test2
-            repo_name: test2
-    steps:
-      # 在 steps 中需要先检出仓库才能 uses action 文件
-      - name: Checkout target repo
-        uses: actions/checkout@v4
-      - uses: ./.github/workflows/validation.yml
-        with:
-          cd_path: "${{ matrix.config.repo }}/ci" # (Github）持续交付路径, 不能以 / 结尾
-          cd_branch: "main_-_cd_-_${{ matrix.config.repo }}" # 不能包含 / 等字符
-          dist_path: "${{ matrix.config.repo }}/src" # 分发路径, 不能以 / 结尾
-          dist_branch: "main_-_dist_-_${{ matrix.config.repo }}" # 不能包含 / 等字符
+  test:
+    uses: ./.github/workflows/validation.yml
+    secrets: inherit
+    with:
+      cd_path: "test/ci"
+      cd_branch: "main_-_cd_-_test"
+      dist_path: "test/src"
+      dist_branch: "main_-_dist_-_test"
+  test2:
+    uses: ./.github/workflows/validation.yml
+    secrets: inherit
+    with:
+      cd_path: "test2/ci"
+      cd_branch: "main_-_cd_-_test2"
+      dist_path: "test2/src"
+      dist_branch: "main_-_dist_-_test2"
