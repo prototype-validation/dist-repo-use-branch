@@ -1,0 +1,103 @@
+# refusing to allow a GitHub App to create or update workflow .github/workflows/XXXX.yml without workflows permission
+# 遇到这个错误，需要检查三点：
+# 1. 仓库设置 Workflow permissions 允许写权限
+# 2. 使用的 TOKEN 具有 workflows 权限，如果是组织仓库还需要检查 TOKEN 的作用域
+# 3. actions/checkout 也需要使用 workflows 权限的 TOKEN
+# -------------------------------------------------------------------
+# https://github.com/Soltus
+
+name: Test
+
+on:
+  schedule:
+    #        ┌───────────── minute (0 - 59)
+    #        │  ┌───────────── hour (0 - 23)
+    #        │  │ ┌───────────── day of the month (1 - 31)
+    #        │  │ │ ┌───────────── month (1 - 12 or JAN-DEC)
+    #        │  │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
+    #        │  │ │ │ │
+    #        │  │ │ │ │
+    #        │  │ │ │ │
+    #        *  * * * *
+    - cron: '0 7 * * *'
+    # scheduled at 07:00 every day
+
+  workflow_dispatch:  # click the button on Github repo!
+    inputs:
+      sync_test_mode: # Adds a boolean option that appears during manual workflow run for easy test mode config
+        description: 'Fork Sync Test Mode'
+        type: boolean
+        default: false
+
+env:
+    target_sync_branch: "main"
+    upstream_sync_repo: "prototype-validation/dist-repo-use-branch" # 根据实际情况修改
+    upstream_sync_branch: "main_-_dist_-_test"
+
+jobs:
+  sync_latest_from_upstream:
+    runs-on: ubuntu-latest
+    name: Sync latest commits from upstream repo
+
+    steps:
+      # REQUIRED step
+      # Step 1: run a standard checkout action, provided by github
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.TOEKN_FOREVER_FULL_WRITE }} # 使用具有完全写入权限的 TOKEN（必须包含 workflows ）
+          # REQUIRED if your upstream repo is private (see wiki), 启用会造成 check-branch-exists 失败
+          # persist-credentials: false
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+
+      - name: Check if target_sync_branch exists in the remote
+        id: check-branch-exists
+        run: |
+          # grep -qE 使用了 -E 参数来启用扩展的正则表达式, 并且使用了 $ 符号来确保匹配的字符串以 main 结尾, 达到精准匹配的目的
+          if git ls-remote --heads origin | grep -qE 'refs/heads/${{ env.target_sync_branch }}$'; then
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+            echo "Remote branch ${{ env.target_sync_branch }} exists."
+            git checkout ${{ env.target_sync_branch }}
+          else
+            echo "branch_exists=false" >> $GITHUB_OUTPUT
+            echo "Remote branch ${{ env.target_sync_branch }} does not exist."
+            git remote add upstream https://github.com/${{ env.upstream_sync_repo }}.git
+            # 创建一个临时分支来fetch远程分支的内容
+            git fetch upstream ${{ env.upstream_sync_branch }}:temp_${{ env.upstream_sync_branch }}
+            # 基于临时分支创建新的本地分支
+            git checkout -b ${{ env.target_sync_branch }} temp_${{ env.upstream_sync_branch }}
+            # 删除临时分支
+            git branch -d temp_${{ env.upstream_sync_branch }}
+            # 推送新分支到远程仓库
+            git push origin ${{ env.target_sync_branch }}
+          fi
+
+      # REQUIRED step
+      # Step 2: run the sync action
+      - name: Sync upstream changes
+        id: sync
+        if: steps.check-branch-exists.outputs.branch_exists == 'true'
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+        with:
+          target_sync_branch: ${{ env.target_sync_branch }}
+          target_repo_token: ${{ secrets.TOEKN_FOREVER_FULL_WRITE }} # 可能涉及 workflows 的修改，需要对应权限
+          upstream_sync_branch: ${{ env.upstream_sync_branch }}
+          upstream_sync_repo: ${{ env.upstream_sync_repo }}
+          test_mode: ${{ inputs.sync_test_mode }}
+
+      # Step 3: Display a sample message based on the sync output var 'has_new_commits'
+      - name: New commits found
+        if: steps.sync.outputs.has_new_commits == 'true'
+        run: echo "New commits were found to sync."
+
+      - name: No new commits
+        if: steps.sync.outputs.has_new_commits == 'false'
+        run: echo "There were no new commits."
+
+      - name: Show value of 'has_new_commits'
+        run: echo ${{ steps.sync.outputs.has_new_commits }}
