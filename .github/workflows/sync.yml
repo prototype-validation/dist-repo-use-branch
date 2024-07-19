@@ -53,7 +53,6 @@ jobs:
         run: |
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
-          git remote add upstream https://github.com/${{ inputs.upstream_sync_repo }}.git
 
       - name: Check if target_sync_branch exists in the remote
         id: check-branch-exists
@@ -64,6 +63,7 @@ jobs:
           if echo "$RESPONSE" | grep -q "Not Found"; then
             echo "branch_exists=false" >> $GITHUB_OUTPUT
             echo "Remote branch ${{ inputs.target_sync_branch }} does not exist."
+            git remote add upstream https://github.com/${{ inputs.upstream_sync_repo }}.git
             # 创建一个临时分支来fetch远程分支的内容
             git fetch upstream ${{ inputs.upstream_sync_branch }}:temp_${{ inputs.upstream_sync_branch }}
             # 基于临时分支创建新的本地分支
@@ -87,6 +87,7 @@ jobs:
         with:
           target_sync_branch: ${{ inputs.target_sync_branch }}
           target_repo_token: ${{ secrets.TOEKN_FOREVER_FULL_WRITE }} # 可能涉及 workflows 的修改，需要对应权限
+          upstream_repo_access_token: ${{ secrets.TOEKN_FOREVER_FULL_WRITE }} # 上游如果不是 ${{ github.repository }} 则需要
           upstream_sync_branch: ${{ inputs.upstream_sync_branch }}
           upstream_sync_repo: ${{ inputs.upstream_sync_repo }}
           test_mode: ${{ inputs.sync_test_mode }}
