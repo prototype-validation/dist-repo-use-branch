@@ -16,6 +16,9 @@ jobs:
           - repo: test2
             repo_name: test2
     steps:
+      # 在 steps 中需要先检出仓库才能 uses action 文件
+      - name: Checkout target repo
+        uses: actions/checkout@v4
       - uses: ./.github/workflows/validation.yml
         with:
           cd_path: "${{ matrix.config.repo }}/ci" # (Github）持续交付路径, 不能以 / 结尾
