@@ -14,9 +14,9 @@ jobs:
     needs: []
     secrets: inherit
     with:
-      name: "test"
+      name: "test1"
       repo_name: "prototype-test/dist-repo-use-branch_test"
-      upstream_dist_path: "test"
+      upstream_dist_path: "test/test1"
   test2:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -24,7 +24,7 @@ jobs:
     with:
       name: "test2"
       repo_name: "prototype-test/dist-repo-use-branch_test2"
-      upstream_dist_path: "test2"
+      upstream_dist_path: "test/test2"
   test3:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -32,7 +32,7 @@ jobs:
     with:
       name: "test3"
       repo_name: "prototype-test/dist-repo-use-branch_test3"
-      upstream_dist_path: "test3"
+      upstream_dist_path: "test/test3"
   test4:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -40,7 +40,7 @@ jobs:
     with:
       name: "test4"
       repo_name: "prototype-test/dist-repo-use-branch_test4"
-      upstream_dist_path: "test4"
+      upstream_dist_path: "test/test4"
   test5:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -48,7 +48,7 @@ jobs:
     with:
       name: "test5"
       repo_name: "prototype-test/dist-repo-use-branch_test5"
-      upstream_dist_path: "test5"
+      upstream_dist_path: "test/test5"
   test6:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -56,7 +56,7 @@ jobs:
     with:
       name: "test6"
       repo_name: "prototype-test/dist-repo-use-branch_test6"
-      upstream_dist_path: "test6"
+      upstream_dist_path: "test/test6"
   test7:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -64,7 +64,7 @@ jobs:
     with:
       name: "test7"
       repo_name: "prototype-test/dist-repo-use-branch_test7"
-      upstream_dist_path: "test7"
+      upstream_dist_path: "test/test7"
   test8:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -72,7 +72,7 @@ jobs:
     with:
       name: "test8"
       repo_name: "prototype-test/dist-repo-use-branch_test8"
-      upstream_dist_path: "test8"
+      upstream_dist_path: "test/test8"
   test9:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -80,7 +80,7 @@ jobs:
     with:
       name: "test9"
       repo_name: "prototype-test/dist-repo-use-branch_test9"
-      upstream_dist_path: "test9"
+      upstream_dist_path: "test/test9"
   test10:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -88,7 +88,7 @@ jobs:
     with:
       name: "test10"
       repo_name: "prototype-test/dist-repo-use-branch_test10"
-      upstream_dist_path: "test10"
+      upstream_dist_path: "test/test10"
   test11:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -96,4 +96,4 @@ jobs:
     with:
       name: "test11"
       repo_name: "prototype-test/dist-repo-use-branch_test11"
-      upstream_dist_path: "test11"
+      upstream_dist_path: "test/test11"
