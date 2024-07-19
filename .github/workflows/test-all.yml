@@ -9,13 +9,13 @@ on:
       - main
 
 jobs:
-  test:
+  test1:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
     secrets: inherit
     with:
       name: "test1"
-      repo_name: "prototype-test/dist-repo-use-branch_test"
+      repo_name: "prototype-test/dist-repo-use-branch_test1"
       upstream_dist_path: "test/test1"
   test2:
     uses: ./.github/workflows/validation-proxy.yml
@@ -97,3 +97,75 @@ jobs:
       name: "test11"
       repo_name: "prototype-test/dist-repo-use-branch_test11"
       upstream_dist_path: "test/test11"
+  test12:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test12"
+      repo_name: "prototype-test/dist-repo-use-branch_test12"
+      upstream_dist_path: "test/test12"
+  test13:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test13"
+      repo_name: "prototype-test/dist-repo-use-branch_test13"
+      upstream_dist_path: "test/test13"
+  test14:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test14"
+      repo_name: "prototype-test/dist-repo-use-branch_test14"
+      upstream_dist_path: "test/test14"
+  test15:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test15"
+      repo_name: "prototype-test/dist-repo-use-branch_test15"
+      upstream_dist_path: "test/test15"
+  test16:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test16"
+      repo_name: "prototype-test/dist-repo-use-branch_test16"
+      upstream_dist_path: "test/test16"
+  test17:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test17"
+      repo_name: "prototype-test/dist-repo-use-branch_test17"
+      upstream_dist_path: "test/test17"
+  test18:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test18"
+      repo_name: "prototype-test/dist-repo-use-branch_test18"
+      upstream_dist_path: "test/test18"
+  test19:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test19"
+      repo_name: "prototype-test/dist-repo-use-branch_test19"
+      upstream_dist_path: "test/test19"
+  test20:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test20"
+      repo_name: "prototype-test/dist-repo-use-branch_test20"
+      upstream_dist_path: "test/test20"
