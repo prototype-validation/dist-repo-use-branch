@@ -77,8 +77,9 @@ jobs:
             echo "Remote branch ${{ inputs.target_sync_branch }} exists."
             # 创建一个临时分支来fetch远程分支的内容
             git fetch upstream ${{ inputs.upstream_sync_branch }}:temp_${{ inputs.upstream_sync_branch }}
-            git branch origin -D ${{ inputs.target_sync_branch }}  # 强制删除本地分支
-            git branch origin ${{ inputs.target_sync_branch }} temp_${{ inputs.upstream_sync_branch }}  # 创建新分支
+            git checkout temp_${{ inputs.upstream_sync_branch }}
+            git branch -D origin/${{ inputs.target_sync_branch }}  # 强制删除本地分支
+            git branch ${{ inputs.target_sync_branch }} temp_${{ inputs.upstream_sync_branch }}  # 创建新分支
             # 强制删除临时分支，没必要
             # git branch -D temp_${{ inputs.upstream_sync_branch }}
             # 推送新分支到远程仓库
