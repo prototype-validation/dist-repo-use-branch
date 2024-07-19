@@ -9,6 +9,7 @@
 name: Test
 
 on:
+  workflow_call:
   schedule:
     #        ┌───────────── minute (0 - 59)
     #        │  ┌───────────── hour (0 - 23)

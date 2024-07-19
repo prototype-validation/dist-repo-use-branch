@@ -9,6 +9,7 @@
 name: Test
 
 on:
+  workflow_call:
   schedule:
     #        ┌───────────── minute (0 - 59)
     #        │  ┌───────────── hour (0 - 23)
@@ -32,7 +33,7 @@ on:
 env:
     target_sync_branch: "main"
     upstream_sync_repo: "prototype-validation/dist-repo-use-branch" # 根据实际情况修改
-    upstream_sync_branch: "main_-_dist_-_test"
+    upstream_sync_branch: "main_-_dist_-_test2"
 
 jobs:
   sync_latest_from_upstream:
