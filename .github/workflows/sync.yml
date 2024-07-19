@@ -6,7 +6,7 @@
 # -------------------------------------------------------------------
 # https://github.com/Soltus
 
-name: Test
+name: sync
 
 on:
   workflow_call:
@@ -58,37 +58,11 @@ jobs:
       - name: Check if target_sync_branch exists in the remote
         id: check-branch-exists
         run: |
-            # 创建一个临时分支来fetch远程分支的内容
-            git fetch upstream ${{ inputs.upstream_sync_branch }}:temp_${{ inputs.upstream_sync_branch }}
-            git checkout temp_${{ inputs.upstream_sync_branch }}
-            # 强制删除本地分支 并忽略报错（如果分支不存在）
-            git branch -D ${{ inputs.target_sync_branch }} || true
-            git branch ${{ inputs.target_sync_branch }} temp_${{ inputs.upstream_sync_branch }}  # 创建新分支
-            # 强制推送新分支到远程仓库
-            git push --force origin ${{ inputs.target_sync_branch }}
-
-      # # REQUIRED step
-      # # Step 2: run the sync action
-      # - name: Sync upstream changes
-      #   id: sync
-      #   if: steps.check-branch-exists.outputs.branch_exists == 'true'
-      #   uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
-      #   with:
-      #     target_sync_branch: ${{ inputs.target_sync_branch }}
-      #     target_repo_token: ${{ secrets.TOEKN_FOREVER_FULL_WRITE }} # 可能涉及 workflows 的修改，需要对应权限
-      #     upstream_repo_access_token: ${{ secrets.TOEKN_FOREVER_FULL_WRITE }} # 上游如果不是 ${{ github.repository }} 则需要
-      #     upstream_sync_branch: ${{ inputs.upstream_sync_branch }}
-      #     upstream_sync_repo: ${{ inputs.upstream_sync_repo }}
-      #     test_mode: ${{ inputs.sync_test_mode }}
-
-      # # Step 3: Display a sample message based on the sync output var 'has_new_commits'
-      # - name: New commits found
-      #   if: steps.sync.outputs.has_new_commits == 'true'
-      #   run: echo "New commits were found to sync."
-
-      # - name: No new commits
-      #   if: steps.sync.outputs.has_new_commits == 'false'
-      #   run: echo "There were no new commits."
-
-      # - name: Show value of 'has_new_commits'
-      #   run: echo ${{ steps.sync.outputs.has_new_commits }}
+          # 创建一个临时分支来fetch远程分支的内容
+          git fetch upstream ${{ inputs.upstream_sync_branch }}:temp_${{ inputs.upstream_sync_branch }}
+          git checkout temp_${{ inputs.upstream_sync_branch }}
+          # 强制删除本地分支 并忽略报错（如果分支不存在）
+          git branch -D ${{ inputs.target_sync_branch }} || true
+          git branch ${{ inputs.target_sync_branch }} temp_${{ inputs.upstream_sync_branch }}  # 创建新分支
+          # 强制推送新分支到远程仓库
+          git push --force origin ${{ inputs.target_sync_branch }}

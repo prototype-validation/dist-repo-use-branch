@@ -7,7 +7,7 @@ on:
   workflow_call:
     inputs:
       name:
-        description: "目标名，必须指定"
+        description: "目标（下游）名，必须指定"
         required: true
         type: string
       repo_name:
@@ -18,26 +18,30 @@ on:
         description: "目标（下游）仓库主分支名"
         default: main
         type: string
-      upstream_repository:  # 上游仓库
+      upstream_repository:
         description: "上游仓库， 格式为 owner/repository ，不指定则默认为当前仓库"
         default: prototype-validation/dist-repo-use-branch_upstream # ${{ github.repository }}
         type: string
+      upstream_dist_path:
+        description: "上游仓库分发路径，必须指定，不能以 / 结尾"
+        required: true
+        type: string
 
 jobs:
-  build:
+  dist:
     uses: ./.github/workflows/validation.yml
     secrets: inherit
     with:
       repository: ${{ inputs.upstream_repository }}
       main_branch: ${{ inputs.main_branch }}
-      cd_path: ${{ inputs.name }}/ci
-      cd_branch: ${{ inputs.main_branch }}_-_cd_-_${{ inputs.name }}
-      dist_path: ${{ inputs.name }}/src
+      # cd_path: ${{ inputs.name }}/ci
+      # cd_branch: ${{ inputs.main_branch }}_-_cd_-_${{ inputs.name }}
+      dist_path: ${{ inputs.upstream_dist_path }}
       dist_branch: ${{ inputs.main_branch }}_-_dist_-_${{ inputs.name }}
   sync:
     uses: ./.github/workflows/sync.yml
     secrets: inherit
-    needs: [build]
+    needs: [dist]
     with:
       target_sync_repo: ${{ inputs.repo_name }}
       target_sync_branch: ${{ inputs.main_branch }}

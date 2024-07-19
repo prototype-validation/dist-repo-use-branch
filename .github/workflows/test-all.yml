@@ -16,6 +16,7 @@ jobs:
     with:
       name: "test"
       repo_name: "prototype-test/dist-repo-use-branch_test"
+      upstream_dist_path: "test"
   test2:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -23,6 +24,7 @@ jobs:
     with:
       name: "test2"
       repo_name: "prototype-test/dist-repo-use-branch_test2"
+      upstream_dist_path: "test2"
   test3:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -30,6 +32,7 @@ jobs:
     with:
       name: "test3"
       repo_name: "prototype-test/dist-repo-use-branch_test3"
+      upstream_dist_path: "test3"
   test4:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -37,6 +40,7 @@ jobs:
     with:
       name: "test4"
       repo_name: "prototype-test/dist-repo-use-branch_test4"
+      upstream_dist_path: "test4"
   test5:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -44,6 +48,7 @@ jobs:
     with:
       name: "test5"
       repo_name: "prototype-test/dist-repo-use-branch_test5"
+      upstream_dist_path: "test5"
   test6:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
@@ -51,3 +56,4 @@ jobs:
     with:
       name: "test6"
       repo_name: "prototype-test/dist-repo-use-branch_test6"
+      upstream_dist_path: "test6"
