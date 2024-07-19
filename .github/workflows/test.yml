@@ -10,7 +10,7 @@ jobs:
     secrets: inherit
     with:
       name: "test"
-  sync:
-    uses: prototype-test/dist-repo-use-branch_test/.github/workflows/test.yml
-    secrets: inherit
-    needs: build
+  # sync:
+  #   uses: prototype-test/dist-repo-use-branch_test/.github/workflows/test.yml@main_-_cd_-_test
+  #   secrets: inherit
+  #   needs: build
