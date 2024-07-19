@@ -1,5 +1,8 @@
 name: validation-proxy
 
+# ::set-output 命令将被弃用，而 env 又不能直接非 steps 的 job 中使用，而 steps 又不支持 uses 使用 action yml 文件……
+# 有两种办法：一是使用 job 的 outputs 转发 env ，例如 job 名为 setup 则转发到 needs.setup.outputs（还必须定义 job 的 steps 否则报错），二是直接使用 inputs
+
 on:
   workflow_call:
     inputs:
@@ -11,41 +14,32 @@ on:
         description: "目标（下游）仓库，格式为 owner/repository ，必须指定"
         required: true
         type: string
-env:
-  repository: prototype-validation/dist-repo-use-branch_upstream # 可以指定独立的仓库，也可以使用 ${{ github.repository }}
-  main_branch: ${{ github.ref }} # 如果指定了独立的仓库且主分支与当前仓库不一致则需要指定主分支，如果一致则可用 ${{ github.ref }}
-  cd_branch_prefix: ${{ github.ref }}_-_cd_-_ # 如果指定了独立的仓库且主分支与当前仓库不一致则需要指定分支前缀的前缀，如果一致则可用 ${{ github.ref }}
-  dist_branch_prefix: ${{ github.ref }}_-_dist_-_ # 如果指定了独立的仓库且主分支与当前仓库不一致则需要指定分支前缀的前缀，如果一致则可用 ${{ github.ref }}
+      main_branch:
+        description: "目标（下游）仓库主分支名"
+        default: main
+        type: string
+      upstream_repository:  # 上游仓库
+        description: "上游仓库， 格式为 owner/repository ，不指定则默认为当前仓库"
+        default: prototype-validation/dist-repo-use-branch_upstream # ${{ github.repository }}
+        type: string
+
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      # ::set-output 命令将被弃用，而 env 又不能直接在下面非 steps 中使用，而 steps 又不支持 uses 使用 action yml 文件……因此这里转发使用 env
-      repository: ${{ env.repository }}
-      main_branch: ${{ env.main_branch }}
-      cd_branch_prefix: ${{ env.cd_branch_prefix }}
-      dist_branch_prefix: ${{ env.dist_branch_prefix }}
-    steps:
-      - id: nothing-step
-        run: |
-          echo "这一步是必要的，去掉会报错。env.repository=${{ env.repository }}"
   build:
-    needs: setup
     uses: ./.github/workflows/validation.yml
     secrets: inherit
     with:
-      repository: ${{ needs.setup.outputs.repository }}
-      main_branch: ${{ needs.setup.outputs.main_branch }}
+      repository: ${{ inputs.upstream_repository }}
+      main_branch: ${{ inputs.main_branch }}
       cd_path: ${{ inputs.name }}/ci
-      cd_branch: ${{ needs.setup.outputs.cd_branch_prefix }}${{ inputs.name }}
+      cd_branch: ${{ inputs.main_branch }}_-_cd_-_${{ inputs.name }}
       dist_path: ${{ inputs.name }}/src
-      dist_branch: ${{ needs.setup.outputs.dist_branch_prefix }}${{ inputs.name }}
+      dist_branch: ${{ inputs.main_branch }}_-_dist_-_${{ inputs.name }}
   sync:
     uses: ./.github/workflows/sync.yml
     secrets: inherit
-    needs: [setup, build]
+    needs: [build]
     with:
       target_sync_repo: ${{ inputs.repo_name }}
-      target_sync_branch: ${{ needs.setup.outputs.main_branch }}
-      upstream_sync_branch: ${{ needs.setup.outputs.dist_branch_prefix }}${{ inputs.name }}
-      upstream_sync_repo: ${{ needs.setup.outputs.repository }}
+      target_sync_branch: ${{ inputs.main_branch }}
+      upstream_sync_branch: ${{ inputs.main_branch }}_-_dist_-_${{ inputs.name }}
+      upstream_sync_repo: ${{ inputs.upstream_repository }}
