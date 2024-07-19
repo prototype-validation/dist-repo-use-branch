@@ -8,29 +8,40 @@ on:
     branches:
       - main
 
-# 通过设置needs: []，每个作业都不依赖于其他作业，因此它们可以并行运行。
 jobs:
   test:
-    uses: ./.github/workflows/test.yml
-    secrets: inherit
+    uses: ./.github/workflows/validation-proxy.yml
     needs: []
+    secrets: inherit
+    with:
+      name: "test"
   test2:
-    uses: ./.github/workflows/test2.yml
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
     secrets: inherit
-    needs: [test]
+    with:
+      name: "test2"
   test3:
-    uses: ./.github/workflows/test3.yml
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
     secrets: inherit
-    needs: [test2]
+    with:
+      name: "test3"
   test4:
-    uses: ./.github/workflows/test4.yml
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
     secrets: inherit
-    needs: [test3]
+    with:
+      name: "test4"
   test5:
-    uses: ./.github/workflows/test5.yml
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
     secrets: inherit
-    needs: [test4]
+    with:
+      name: "test5"
   test6:
-    uses: ./.github/workflows/test6.yml
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
     secrets: inherit
-    needs: [test5]
+    with:
+      name: "test6"
