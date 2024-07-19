@@ -34,8 +34,6 @@ jobs:
     with:
       repository: ${{ inputs.upstream_repository }}
       main_branch: ${{ inputs.main_branch }}
-      # cd_path: ${{ inputs.name }}/ci
-      # cd_branch: ${{ inputs.main_branch }}_-_cd_-_${{ inputs.name }}
       dist_path: ${{ inputs.upstream_dist_path }}
       dist_branch: ${{ inputs.main_branch }}_-_dist_-_${{ inputs.name }}
   sync:
