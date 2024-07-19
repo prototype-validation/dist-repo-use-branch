@@ -169,3 +169,19 @@ jobs:
       name: "test20"
       repo_name: "prototype-test/dist-repo-use-branch_test20"
       upstream_dist_path: "test/test20"
+  test21:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test21"
+      repo_name: "prototype-test/dist-repo-use-branch_test21"
+      upstream_dist_path: "test/test21"
+  test22:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test22"
+      repo_name: "prototype-test/dist-repo-use-branch_test22"
+      upstream_dist_path: "test/test22"
