@@ -6,6 +6,9 @@ name: Validation
 on:
   workflow_call:
     inputs:
+      repository:  # 上游仓库
+        required: true
+        type: string
       main_branch:  # 上游主分支
         required: true
         type: string
@@ -29,6 +32,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          repository: ${{ inputs.repository }}
           fetch-depth: 0  # 确保可以获取所有历史记录，以便合并
           token: ${{ secrets.TOEKN_FOREVER_FULL_WRITE }} # 使用具有完全写入权限的 TOKEN（必须包含 workflows ）
 
@@ -145,6 +149,7 @@ jobs:
         id: push_dist_branch
         uses: ad-m/github-push-action@master
         with:
+          repository: ${{ inputs.repository }}
           branch: ${{ inputs.dist_branch }}
           force: true
           # force_with_lease: true # 仅在远程分支自上次检出以来没有其他提交的情况下成功
@@ -156,6 +161,7 @@ jobs:
         id: push_cd_branch
         uses: ad-m/github-push-action@master
         with:
+          repository: ${{ inputs.repository }}
           branch: ${{ inputs.cd_branch }}
           force: true
           # force_with_lease: true # 仅在远程分支自上次检出以来没有其他提交的情况下成功
