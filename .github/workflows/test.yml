@@ -9,10 +9,7 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/validation.yml
+    uses: ./.github/workflows/validation-proxy.yml
     secrets: inherit
     with:
-      cd_path: "test/ci"
-      cd_branch: "main_-_cd_-_test"
-      dist_path: "test/src"
-      dist_branch: "main_-_dist_-_test"
+      name: "test"
