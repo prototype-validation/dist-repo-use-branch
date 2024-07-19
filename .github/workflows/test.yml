@@ -31,12 +31,56 @@ on:
         - test22
       repo_name:
         description: "目标（下游）仓库，格式为 owner/repository ，必须指定"
-        required: true
-        type: string
+        type: choice
+        options:
+        - prototype-test/dist-repo-use-branch_test1
+        - prototype-test/dist-repo-use-branch_test2
+        - prototype-test/dist-repo-use-branch_test3
+        - prototype-test/dist-repo-use-branch_test4
+        - prototype-test/dist-repo-use-branch_test5
+        - prototype-test/dist-repo-use-branch_test6
+        - prototype-test/dist-repo-use-branch_test7
+        - prototype-test/dist-repo-use-branch_test8
+        - prototype-test/dist-repo-use-branch_test9
+        - prototype-test/dist-repo-use-branch_test10
+        - prototype-test/dist-repo-use-branch_test11
+        - prototype-test/dist-repo-use-branch_test12
+        - prototype-test/dist-repo-use-branch_test13
+        - prototype-test/dist-repo-use-branch_test14
+        - prototype-test/dist-repo-use-branch_test15
+        - prototype-test/dist-repo-use-branch_test16
+        - prototype-test/dist-repo-use-branch_test17
+        - prototype-test/dist-repo-use-branch_test18
+        - prototype-test/dist-repo-use-branch_test19
+        - prototype-test/dist-repo-use-branch_test20
+        - prototype-test/dist-repo-use-branch_test21
+        - prototype-test/dist-repo-use-branch_test22
       upstream_dist_path:
         description: "上游仓库分发路径，必须指定，不能以 / 结尾"
-        required: true
-        type: string
+        type: choice
+        options:
+        - test/test1
+        - test/test2
+        - test/test3
+        - test/test4
+        - test/test5
+        - test/test6
+        - test/test7
+        - test/test8
+        - test/test9
+        - test/test10
+        - test/test11
+        - test/test12
+        - test/test13
+        - test/test14
+        - test/test15
+        - test/test16
+        - test/test17
+        - test/test18
+        - test/test19
+        - test/test20
+        - test/test21
+        - test/test22
 
 jobs:
   build:
