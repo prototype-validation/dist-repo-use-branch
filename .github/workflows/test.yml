@@ -42,63 +42,63 @@ jobs:
         id: set-vars
         run: |
           # 定义映射关系
-          const nameToRepoMap = {
-            'test1': 'prototype-test/dist-repo-use-branch_test1',
-            'test2': 'prototype-test/dist-repo-use-branch_test2',
-            'test3': 'prototype-test/dist-repo-use-branch_test3',
-            'test4': 'prototype-test/dist-repo-use-branch_test4',
-            'test5': 'prototype-test/dist-repo-use-branch_test5',
-            'test6': 'prototype-test/dist-repo-use-branch_test6',
-            'test7': 'prototype-test/dist-repo-use-branch_test7',
-            'test8': 'prototype-test/dist-repo-use-branch_test8',
-            'test9': 'prototype-test/dist-repo-use-branch_test9',
-            'test10': 'prototype-test/dist-repo-use-branch_test10',
-            'test11': 'prototype-test/dist-repo-use-branch_test11',
-            'test12': 'prototype-test/dist-repo-use-branch_test12',
-            'test13': 'prototype-test/dist-repo-use-branch_test13',
-            'test14': 'prototype-test/dist-repo-use-branch_test14',
-            'test15': 'prototype-test/dist-repo-use-branch_test15',
-            'test16': 'prototype-test/dist-repo-use-branch_test16',
-            'test17': 'prototype-test/dist-repo-use-branch_test17',
-            'test18': 'prototype-test/dist-repo-use-branch_test18',
-            'test19': 'prototype-test/dist-repo-use-branch_test19',
-            'test20': 'prototype-test/dist-repo-use-branch_test20',
-            'test21': 'prototype-test/dist-repo-use-branch_test21',
-            'test22': 'prototype-test/dist-repo-use-branch_test22'
-          };
+          declare -A nameToRepoMap=(
+            ["test1"]="prototype-test/dist-repo-use-branch_test1"
+            ["test2"]="prototype-test/dist-repo-use-branch_test2"
+            ["test3"]="prototype-test/dist-repo-use-branch_test3"
+            ["test4"]="prototype-test/dist-repo-use-branch_test4"
+            ["test5"]="prototype-test/dist-repo-use-branch_test5"
+            ["test6"]="prototype-test/dist-repo-use-branch_test6"
+            ["test7"]="prototype-test/dist-repo-use-branch_test7"
+            ["test8"]="prototype-test/dist-repo-use-branch_test8"
+            ["test9"]="prototype-test/dist-repo-use-branch_test9"
+            ["test10"]="prototype-test/dist-repo-use-branch_test10"
+            ["test11"]="prototype-test/dist-repo-use-branch_test11"
+            ["test12"]="prototype-test/dist-repo-use-branch_test12"
+            ["test13"]="prototype-test/dist-repo-use-branch_test13"
+            ["test14"]="prototype-test/dist-repo-use-branch_test14"
+            ["test15"]="prototype-test/dist-repo-use-branch_test15"
+            ["test16"]="prototype-test/dist-repo-use-branch_test16"
+            ["test17"]="prototype-test/dist-repo-use-branch_test17"
+            ["test18"]="prototype-test/dist-repo-use-branch_test18"
+            ["test19"]="prototype-test/dist-repo-use-branch_test19"
+            ["test20"]="prototype-test/dist-repo-use-branch_test20"
+            ["test21"]="prototype-test/dist-repo-use-branch_test21"
+            ["test22"]="prototype-test/dist-repo-use-branch_test22"
+          )
 
-          const nameToPathMap = {
-            'test1': 'test/test1',
-            'test2': 'test/test2',
-            'test3': 'test/test3',
-            'test4': 'test/test4',
-            'test5': 'test/test5',
-            'test6': 'test/test6',
-            'test7': 'test/test7',
-            'test8': 'test/test8',
-            'test9': 'test/test9',
-            'test10': 'test/test10',
-            'test11': 'test/test11',
-            'test12': 'test/test12',
-            'test13': 'test/test13',
-            'test14': 'test/test14',
-            'test15': 'test/test15',
-            'test16': 'test/test16',
-            'test17': 'test/test17',
-            'test18': 'test/test18',
-            'test19': 'test/test19',
-            'test20': 'test/test20',
-            'test21': 'test/test21',
-            'test22': 'test/test22'
-          };
+          declare -A nameToPathMap=(
+            ["test1"]="test/test1"
+            ["test2"]="test/test2"
+            ["test3"]="test/test3"
+            ["test4"]="test/test4"
+            ["test5"]="test/test5"
+            ["test6"]="test/test6"
+            ["test7"]="test/test7"
+            ["test8"]="test/test8"
+            ["test9"]="test/test9"
+            ["test10"]="test/test10"
+            ["test11"]="test/test11"
+            ["test12"]="test/test12"
+            ["test13"]="test/test13"
+            ["test14"]="test/test14"
+            ["test15"]="test/test15"
+            ["test16"]="test/test16"
+            ["test17"]="test/test17"
+            ["test18"]="test/test18"
+            ["test19"]="test/test19"
+            ["test20"]="test/test20"
+            ["test21"]="test/test21"
+            ["test22"]="test/test22"
+          )
 
-          const name = "${{ github.event.inputs.name }}";
-          const repoName = nameToRepoMap[name];
-          const upstreamDistPath = nameToPathMap[name];
+          input_name="${{ github.event.inputs.name }}"
+          repo_name="${nameToRepoMap[$input_name]}"
+          upstream_dist_path="${nameToPathMap[$input_name]}"
 
-          # 将变量输出，以便后续步骤使用
-          echo "repo_name=${repoName}" >>$GITHUB_OUTPUT;
-          echo "upstream_dist_path=${upstreamDistPath}" >>$GITHUB_OUTPUT;
+          echo "repo_name=$repo_name" >>$GITHUB_OUTPUT
+          echo "upstream_dist_path=$upstream_dist_path" >>$GITHUB_OUTPUT
+
   dist:
     uses: ./.github/workflows/validation-proxy.yml
     secrets: inherit
