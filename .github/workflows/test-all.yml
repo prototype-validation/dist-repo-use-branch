@@ -2,12 +2,35 @@ name: test all
 
 # 这里通过手动触发器触发，也可以自定义其他触发方式
 on:
+  workflow_call:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
+# 通过设置needs: []，每个作业都不依赖于其他作业，因此它们可以并行运行。
 jobs:
   test:
     uses: ./.github/workflows/test.yml
     secrets: inherit
+    needs: []
   test2:
     uses: ./.github/workflows/test2.yml
     secrets: inherit
+    needs: []
+  test3:
+    uses: ./.github/workflows/test3.yml
+    secrets: inherit
+    needs: []
+  test4:
+    uses: ./.github/workflows/test4.yml
+    secrets: inherit
+    needs: []
+  test5:
+    uses: ./.github/workflows/test5.yml
+    secrets: inherit
+    needs: []
+  test6:
+    uses: ./.github/workflows/test6.yml
+    secrets: inherit
+    needs: []

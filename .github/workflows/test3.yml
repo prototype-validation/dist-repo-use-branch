@@ -1,4 +1,4 @@
-name: test2
+name: test3
 
 on:
   workflow_call:
@@ -9,4 +9,4 @@ jobs:
     uses: ./.github/workflows/validation-proxy.yml
     secrets: inherit
     with:
-      name: "test2"
+      name: "test3"
