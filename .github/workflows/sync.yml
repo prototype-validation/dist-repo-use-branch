@@ -58,29 +58,14 @@ jobs:
       - name: Check if target_sync_branch exists in the remote
         id: check-branch-exists
         run: |
-          # Use GitHub API to get the branch information
-          RESPONSE=$(curl -s -H "Authorization: token${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ inputs.target_sync_repo }}/branches/${{ inputs.target_sync_branch }}")
-          # Check if the response contains 'Not Found' which indicates the branch does not exist
-          if echo "$RESPONSE" | grep -q "Not Found"; then
-            echo "branch_exists=false" >> $GITHUB_OUTPUT
-            echo "Remote branch ${{ inputs.target_sync_branch }} does not exist."
-            # 创建一个临时分支来fetch远程分支的内容
-            git fetch upstream ${{ inputs.upstream_sync_branch }}:temp_${{ inputs.upstream_sync_branch }}
-            # 基于临时分支创建新的本地分支
-            git checkout -b ${{ inputs.target_sync_branch }} temp_${{ inputs.upstream_sync_branch }}
-            # 推送新分支到远程仓库
-            git push origin ${{ inputs.target_sync_branch }}
-          else
-            echo "branch_exists=true" >> $GITHUB_OUTPUT
-            echo "Remote branch ${{ inputs.target_sync_branch }} exists."
             # 创建一个临时分支来fetch远程分支的内容
             git fetch upstream ${{ inputs.upstream_sync_branch }}:temp_${{ inputs.upstream_sync_branch }}
             git checkout temp_${{ inputs.upstream_sync_branch }}
-            git branch -D ${{ inputs.target_sync_branch }}  # 强制删除本地分支
+            # 强制删除本地分支 并忽略报错（如果分支不存在）
+            git branch -D ${{ inputs.target_sync_branch }} || true
             git branch ${{ inputs.target_sync_branch }} temp_${{ inputs.upstream_sync_branch }}  # 创建新分支
             # 强制推送新分支到远程仓库
             git push --force origin ${{ inputs.target_sync_branch }}
-          fi
 
       # # REQUIRED step
       # # Step 2: run the sync action
