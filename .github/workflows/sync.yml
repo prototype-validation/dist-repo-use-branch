@@ -57,12 +57,10 @@ jobs:
       - name: Check if target_sync_branch exists in the remote
         id: check-branch-exists
         run: |
-          # 使用了 -E 参数来启用扩展的正则表达式, 并且使用了 $ 符号来确保匹配的字符串以 main 结尾, 达到精准匹配的目的
-          if git ls-remote --heads origin | grep -E 'refs/heads/${{ inputs.target_sync_branch }}$'; then
-            echo "branch_exists=true" >> $GITHUB_OUTPUT
-            echo "Remote branch ${{ inputs.target_sync_branch }} exists."
-            git checkout ${{ inputs.target_sync_branch }}
-          else
+          # Use GitHub API to get the branch information
+          RESPONSE=$(curl -s -H "Authorization: token${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ inputs.target_sync_repo }}/branches/${{ inputs.target_sync_branch }}")
+          # Check if the response contains 'Not Found' which indicates the branch does not exist
+          if echo "$RESPONSE" | grep -q "Not Found"; then
             echo "branch_exists=false" >> $GITHUB_OUTPUT
             echo "Remote branch ${{ inputs.target_sync_branch }} does not exist."
             git remote add upstream https://github.com/${{ inputs.upstream_sync_repo }}.git
@@ -74,6 +72,10 @@ jobs:
             git branch -d temp_${{ inputs.upstream_sync_branch }}
             # 推送新分支到远程仓库
             git push origin ${{ inputs.target_sync_branch }}
+          else
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+            echo "Remote branch ${{ inputs.target_sync_branch }} exists."
+            git checkout ${{ inputs.target_sync_branch }}
           fi
 
       # REQUIRED step
