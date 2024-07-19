@@ -7,10 +7,10 @@ on:
         required: true
         type: string
 env:
-  repository: ${{ github.repository }} # 可以指定独立的仓库
-  main_branch: ${{ github.ref }}
-  cd_branch_prefix: ${{ github.ref }}_-_cd_-_
-  dist_branch_prefix: ${{ github.ref }}_-_dist_-_
+  repository: prototype-validation/dist-repo-use-branch_upstream # 可以指定独立的仓库，也可以使用 ${{ github.repository }}
+  main_branch: ${{ github.ref }} # 如果指定了独立的仓库且主分支与当前仓库不一致则需要指定主分支，如果一致则可用 ${{ github.ref }}
+  cd_branch_prefix: ${{ github.ref }}_-_cd_-_ # 如果指定了独立的仓库且主分支与当前仓库不一致则需要指定分支前缀的前缀，如果一致则可用 ${{ github.ref }}
+  dist_branch_prefix: ${{ github.ref }}_-_dist_-_ # 如果指定了独立的仓库且主分支与当前仓库不一致则需要指定分支前缀的前缀，如果一致则可用 ${{ github.ref }}
 jobs:
   setup:
     runs-on: ubuntu-latest
