@@ -13,24 +13,24 @@ jobs:
   test:
     uses: ./.github/workflows/test.yml
     secrets: inherit
-    # needs: []
+    needs: []
   test2:
     uses: ./.github/workflows/test2.yml
     secrets: inherit
-    # needs: []
+    needs: [test]
   test3:
     uses: ./.github/workflows/test3.yml
     secrets: inherit
-    # needs: []
+    needs: [test2]
   test4:
     uses: ./.github/workflows/test4.yml
     secrets: inherit
-    # needs: []
+    needs: [test3]
   test5:
     uses: ./.github/workflows/test5.yml
     secrets: inherit
-    # needs: []
+    needs: [test4]
   test6:
     uses: ./.github/workflows/test6.yml
     secrets: inherit
-    # needs: []
+    needs: [test5]
