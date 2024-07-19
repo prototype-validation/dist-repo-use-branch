@@ -35,3 +35,10 @@ jobs:
       cd_branch: "${{ needs.setup.outputs.cd_branch_prefix }}${{ inputs.name }}"
       dist_path: "${{ inputs.name }}/src"
       dist_branch: "${{ needs.setup.outputs.dist_branch_prefix }}${{ inputs.name }}"
+  sync:
+    uses: ./.github/workflows/sync.yml
+    secrets: inherit
+    needs: [setup, build]
+    with:
+      upstream_sync_branch: "${{ needs.setup.outputs.dist_branch_prefix }}${{ inputs.name }}"
+      upstream_sync_repo: ${{ needs.setup.outputs.repository }}
