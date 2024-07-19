@@ -75,7 +75,6 @@ jobs:
           else
             echo "branch_exists=true" >> $GITHUB_OUTPUT
             echo "Remote branch ${{ inputs.target_sync_branch }} exists."
-            git checkout ${{ inputs.target_sync_branch }}
           fi
 
       # REQUIRED step
