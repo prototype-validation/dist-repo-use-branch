@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: "目标名，必须指定"
+        description: "目标名"
+        required: true
         type: choice
         options:
         - test1
@@ -30,7 +31,8 @@ on:
         - test21
         - test22
       repo_name:
-        description: "目标（下游）仓库，格式为 owner/repository ，必须指定"
+        description: "目标（下游）仓库，格式为 owner/repository"
+        required: true
         type: choice
         options:
         - prototype-test/dist-repo-use-branch_test1
@@ -56,7 +58,8 @@ on:
         - prototype-test/dist-repo-use-branch_test21
         - prototype-test/dist-repo-use-branch_test22
       upstream_dist_path:
-        description: "上游仓库分发路径，必须指定，不能以 / 结尾"
+        description: "上游仓库分发路径，不能以 / 结尾"
+        required: true
         type: choice
         options:
         - test/test1
