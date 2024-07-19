@@ -57,8 +57,8 @@ jobs:
       - name: Check if target_sync_branch exists in the remote
         id: check-branch-exists
         run: |
-          # grep -qE 使用了 -E 参数来启用扩展的正则表达式, 并且使用了 $ 符号来确保匹配的字符串以 main 结尾, 达到精准匹配的目的
-          if git ls-remote --heads origin | grep -qE 'refs/heads/${{ inputs.target_sync_branch }}$'; then
+          # 使用了 -E 参数来启用扩展的正则表达式, 并且使用了 $ 符号来确保匹配的字符串以 main 结尾, 达到精准匹配的目的
+          if git ls-remote --heads origin | grep -E 'refs/heads/${{ inputs.target_sync_branch }}$'; then
             echo "branch_exists=true" >> $GITHUB_OUTPUT
             echo "Remote branch ${{ inputs.target_sync_branch }} exists."
             git checkout ${{ inputs.target_sync_branch }}
