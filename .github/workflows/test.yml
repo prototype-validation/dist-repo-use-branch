@@ -8,6 +8,7 @@ on:
         required: true
         type: choice
         options:
+        - test-no-fork
         - test1
         - test2
         - test3
@@ -43,6 +44,7 @@ jobs:
         run: |
           # 定义映射关系
           declare -A nameToRepoMap=(
+            ["test-no-fork"]="prototype-test/dist-repo-use-branch_test-no-fork"
             ["test1"]="prototype-test/dist-repo-use-branch_test1"
             ["test2"]="prototype-test/dist-repo-use-branch_test2"
             ["test3"]="prototype-test/dist-repo-use-branch_test3"
@@ -68,6 +70,7 @@ jobs:
           )
 
           declare -A nameToPathMap=(
+            ["test-no-fork"]="test/test-no-fork"
             ["test1"]="test/test1"
             ["test2"]="test/test2"
             ["test3"]="test/test3"

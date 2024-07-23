@@ -9,6 +9,14 @@ on:
       - main
 
 jobs:
+  test-no-fork:
+    uses: ./.github/workflows/validation-proxy.yml
+    needs: []
+    secrets: inherit
+    with:
+      name: "test-no-fork"
+      repo_name: "prototype-test/dist-repo-use-branch_test-no-fork"
+      upstream_dist_path: "test/test-no-fork"
   test1:
     uses: ./.github/workflows/validation-proxy.yml
     needs: []
